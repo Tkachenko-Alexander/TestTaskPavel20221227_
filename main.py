@@ -1,32 +1,46 @@
-'''used Python 3.8
-developed and tested by
-Aleksander Tkachenko
-mivotanaj@gmail.com'''
 
+from abc import ABC, abstractmethod
 
-print('Please, input your distance in km. For example 12 or 15.455')
-s = float(input())
-print('Please, input the number of your mode of transportation on foot - 1, bike - 2, car - 3, bus - 4')
-figure = input()
-if figure == '1':
-    t = s / 5
-    h = int((t*60) // 60)
-    m = int((t*60) % 60)
-    print(h, 'h', m, 'min')
-elif figure == '2':
-    t = s / 30
-    h = int((t*60) // 60)
-    m = int((t*60) % 60)
-    print(h, 'h', m, 'min')
-elif figure == '3':
-    t = s / 50
-    h = int((t * 60) // 60)
-    m = int((t * 60) % 60)
-    print(h, 'h', m, 'min')
-elif figure == '4':
-    t = s / 40
-    h = int((t*60) // 60)
-    m = int((t*60) % 60)
-    print(h, 'h', m, 'min')
+class VehicleStrategy(ABC):
+    @abstractmethod
+    def time_to_cover_distance(self, distance):
+        pass
+
+class OnFoot(VehicleStrategy):
+    def time_to_cover_distance(self, distance):
+        return distance / 5
+
+class ByBike(VehicleStrategy):
+    def time_to_cover_distance(self, distance):
+        return distance / 20
+
+class ByCar(VehicleStrategy):
+    def time_to_cover_distance(self, distance):
+        return distance / 60
+
+class TimeCalculator:
+    def __init__(self, strategy):
+        self._strategy = strategy
+
+    def set_strategy(self, strategy):
+        self._strategy = strategy
+
+    def calculate_time(self, distance):
+        return self._strategy.time_to_cover_distance(distance)
+
+distance = int(input("Enter the distance in km: "))
+vehicle = input("Enter the vehicle (on foot, by bike, by car): ")
+
+if vehicle == "on foot":
+    strategy = OnFoot()
+elif vehicle == "by bike":
+    strategy = ByBike()
+elif vehicle == "by car":
+    strategy = ByCar()
 else:
-    print("This date is wrong. Please, try it again!")
+    raise ValueError("Invalid vehicle")
+
+calculator = TimeCalculator(strategy)
+result = calculator.calculate_time(distance)
+
+print("The time to cover the distance is: {:.2f} hours".format(result))
